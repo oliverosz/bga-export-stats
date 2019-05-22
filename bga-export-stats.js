@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         BGA Player Stats Export
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  CSV Export for BGA user pages
 // @author       oliverosz
-// @match        https://boardgamearena.com/
+// @match        https://boardgamearena.com/player*
+// @run-at       document-idle
 // @grant        none
 // ==/UserScript==
 
@@ -51,15 +52,26 @@ function exportStats() {
 }
 
 /* creates an Export button on user profile (may need to refresh page) */
-window.onload = function() {
-    /* tampermonkey doesn't support '#' in the url (see https://tampermonkey.net/documentation.php#_include), so check if on a table here before continuing. */
-    if (window.location.href.includes("#!player")) {
-        var statusDiv = document.querySelector("#player_status");
-        var exportButton = document.createElement("input");
-        exportButton.setAttribute("type", "button");
-        exportButton.setAttribute("value", "Export stats");
-        exportButton.setAttribute("id", "export_btn");
-        statusDiv.appendChild(exportButton);
-        document.getElementById("export_btn").addEventListener("click", exportStats, false);
-    }
-};
+function addExportBtn() {
+    var statusDiv = document.querySelector("#player_status");
+    var exportButton = document.createElement("input");
+    exportButton.setAttribute("type", "button");
+    exportButton.setAttribute("value", "Export stats");
+    exportButton.setAttribute("id", "export_btn");
+    statusDiv.appendChild(exportButton);
+    document.getElementById("export_btn").addEventListener("click", exportStats, false);
+}
+
+var observer = new MutationObserver(resetTimer);
+var timer = setTimeout(action, 500, observer); // wait for the page to stay still
+observer.observe(document, {childList: true, subtree: true});
+
+function resetTimer(changes, observer) {
+    clearTimeout(timer);
+    timer = setTimeout(action, 300, observer);
+}
+
+function action(o) {
+    o.disconnect();
+    addExportBtn();
+}
