@@ -29,18 +29,24 @@ function exportStats() {
     /* prepend overall player stats */
     output = player + ";Prestige;" + prestige + ";" + karma + ";" + matches + ";" + wins + "\n" + 
              player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + "\n" + output;
-    var div = document.createElement("div");
-    div.setAttribute("id", "pagesection_export");
-    div.className = "pagesection";
-    var header = document.createElement("h3");
-    header.innerText = "Player Name;Game Name;ELO;Rank;Matches;Wins"; /* column headers in the box title */
-    var exported = document.createElement("div");
-    /* select all text when clicked */
-    exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
-    exported.innerText = output;
-    div.appendChild(header);
-    div.appendChild(exported);
-    document.querySelector("#pageheader").parentNode.prepend(div);
+    /* create export box or remove it if already exists */
+    var div = document.querySelector("#pagesection_export");
+    if (div == null) {
+        div = document.createElement("div");
+        div.setAttribute("id", "pagesection_export");
+        div.className = "pagesection";
+        var header = document.createElement("h3");
+        header.innerText = "Player Name;Game Name;ELO;Rank;Matches;Wins"; /* column headers in the box title */
+        var exported = document.createElement("div");
+        /* select all text when clicked */
+        exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
+        exported.innerText = output;
+        div.appendChild(header);
+        div.appendChild(exported);
+        document.querySelector("#pageheader").parentNode.prepend(div);
+    } else {
+        div.remove();
+    }
 }
 if (window.location.href.includes("boardgamearena.com")
     && window.location.href.includes("player")
