@@ -8,11 +8,16 @@ This bookmarklet was created for BGA - [boardgamearena.com](https://boardgameare
 - Matches
 - Wins
 
-The first record contain overall player stats:
+The first 2 records contain overall player stats:
 - Player stats
     - Prestige
+    - Reputation (Karma ☯)
     - Total matches
     - Total wins
+- Recent game history (last 60 days)
+    - Abandoned matches
+    - Timeouts
+    - Total recent matches
 
 ## Usage
 

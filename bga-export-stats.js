@@ -3,11 +3,17 @@ javascript:{
 function exportStats() {
     var output = "";
     var player = document.querySelector("#player_name").innerText;
-    var prestige = document.querySelector("#pageheader_prestige").innerText.trim();
     /* overall stats */
+    var prestige = document.querySelector("#pageheader_prestige").innerText.trim().replace('k', '000');
+    var karma = document.querySelector(".progressbar_label").getElementsByClassName("value")[0].innerText.replace('%','');
     var matches = 0;
     var wins = 0;
     var gameDivs = document.querySelector("#pagesection_prestige").getElementsByClassName("row")[0].getElementsByClassName("palmares_game");
+    var penalties = document.querySelector("#pagesection_reputation").getElementsByClassName("row-value")[0].innerText.match(/(\d+)/g);
+    var abandoned = penalties[0];
+    var timeout = penalties[1];
+    var recent = penalties[2];
+    /* stats per game */
     for (var i = 0; i < gameDivs.length; i++) {
         var game = gameDivs[i].getElementsByClassName("gamename")[0].innerText;
         var details = gameDivs[i].getElementsByClassName("palmares_details")[0].innerText;
@@ -21,7 +27,8 @@ function exportStats() {
         output += player + ";" + game + ";" + elo + ";" + rank + ";" + played + ";" + won + "\n";
     }
     /* prepend overall player stats */
-    output = player + ";Prestige;" + prestige + ";;" + matches + ";" + wins + "\n" + output;
+    output = player + ";Prestige;" + prestige + ";" + karma + ";" + matches + ";" + wins + "\n" + 
+             player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + "\n" + output;
     var div = document.createElement("div");
     div.setAttribute("id", "pagesection_export");
     div.className = "pagesection";
