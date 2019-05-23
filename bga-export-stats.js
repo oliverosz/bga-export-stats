@@ -1,26 +1,13 @@
-// ==UserScript==
-// @name         BGA Player Stats Export
-// @namespace    http://tampermonkey.net/
-// @version      0.3
-// @description  CSV Export for BGA user pages
-// @author       oliverosz
-// @match        https://boardgamearena.com/player*
-// @run-at       document-idle
-// @grant        none
-// ==/UserScript==
-
+javascript:{
 /* generates CSV from user data and displays it at the top */
 function exportStats() {
     var output = "";
-
     var player = document.querySelector("#player_name").innerText;
     var prestige = document.querySelector("#pageheader_prestige").innerText.trim();
     /* overall stats */
     var matches = 0;
     var wins = 0;
-
     var gameDivs = document.querySelector("#pagesection_prestige").getElementsByClassName("row")[0].getElementsByClassName("palmares_game");
-
     for (var i = 0; i < gameDivs.length; i++) {
         var game = gameDivs[i].getElementsByClassName("gamename")[0].innerText;
         var details = gameDivs[i].getElementsByClassName("palmares_details")[0].innerText;
@@ -35,7 +22,6 @@ function exportStats() {
     }
     /* prepend overall player stats */
     output = player + ";Prestige;" + prestige + ";;" + matches + ";" + wins + "\n" + output;
-
     var div = document.createElement("div");
     div.setAttribute("id", "pagesection_export");
     div.className = "pagesection";
@@ -45,33 +31,19 @@ function exportStats() {
     /* select all text when clicked */
     exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
     exported.innerText = output;
-
     div.appendChild(header);
     div.appendChild(exported);
     document.querySelector("#pageheader").parentNode.prepend(div);
 }
-
-/* creates an Export button on user profile (may need to refresh page) */
-function addExportBtn() {
-    var statusDiv = document.querySelector("#player_status");
-    var exportButton = document.createElement("input");
-    exportButton.setAttribute("type", "button");
-    exportButton.setAttribute("value", "Export stats");
-    exportButton.setAttribute("id", "export_btn");
-    statusDiv.appendChild(exportButton);
-    document.getElementById("export_btn").addEventListener("click", exportStats, false);
-}
-
-var observer = new MutationObserver(resetTimer);
-var timer = setTimeout(action, 500, observer); // wait for the page to stay still
-observer.observe(document, {childList: true, subtree: true});
-
-function resetTimer(changes, observer) {
-    clearTimeout(timer);
-    timer = setTimeout(action, 300, observer);
-}
-
-function action(o) {
-    o.disconnect();
-    addExportBtn();
-}
+if (window.location.href.includes("boardgamearena.com")
+    && window.location.href.includes("player")
+    || confirm("It seems, you are not on a BGA player profile page.\nWould you still like ot run the script?"))
+    {
+        try {
+            exportStats();
+        }
+        catch(error) {
+            alert("An error occurred. Try reloading the player profile (click on player name) and rerun the script.\n"+error);
+        }
+    }
+};void(0);
