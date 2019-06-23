@@ -13,6 +13,18 @@ function exportStats() {
     var abandoned = penalties[0];
     var timeout = penalties[1];
     var recent = penalties[2];
+    /* days since last online */
+    var lastSeenStr = document.querySelector("#last_seen").innerText;
+    var lastSeenDays = 0;
+    var lastSeenMatch = lastSeenStr.match(/(\d+)?(.*)/);
+    if (lastSeenMatch[1] !== undefined) {
+        lastSeenDays = Number(lastSeenMatch[1]);
+        if (String(lastSeenMatch[2]).search("év|year") != -1) {
+            lastSeenDays *= 365;
+        } else if (String(lastSeenMatch[2]).search("hónap|month") != -1) {
+            lastSeenDays *= 30;
+        }
+    }
     /* stats per game */
     for (var i = 0; i < gameDivs.length; i++) {
         var game = gameDivs[i].getElementsByClassName("gamename")[0].innerText;
@@ -28,7 +40,7 @@ function exportStats() {
     }
     /* prepend overall player stats */
     output = player + ";Prestige;" + prestige + ";" + karma + ";" + matches + ";" + wins + "\n" + 
-             player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + "\n" + output;
+             player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + ";" + lastSeenDays + "\n" + output;
     /* create export box or remove it if already exists */
     var div = document.querySelector("#pagesection_export");
     if (div == null) {

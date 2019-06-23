@@ -18,6 +18,7 @@ The first 2 records contain overall player stats:
     - Abandoned matches
     - Timeouts
     - Total recent matches
+    - Days since last online
 
 ## Usage
 
