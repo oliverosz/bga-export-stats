@@ -23,6 +23,8 @@ function exportStats() {
             lastSeenDays *= 365;
         } else if (String(lastSeenMatch[2]).search("hónap|month") != -1) {
             lastSeenDays *= 30;
+        } else if (String(lastSeenMatch[2]).search("(mn|h|perc|óra) (ezelőtt|ago)") != -1) {
+            lastSeenDays = 0;
         }
     }
     /* stats per game */
