@@ -16,24 +16,25 @@ function exportStats() {
     /* days since last online */
     var lastSeenStr = document.querySelector("#last_seen").innerText;
     var lastSeenDays = 0;
-    var lastSeenMatch = lastSeenStr.match(/(\d+)?(.*)/);
-    if (lastSeenMatch[1] !== undefined) {
+    var lastSeenMatch = lastSeenStr.match(/(\d+)? (.*)/);
+    if (lastSeenMatch[1] !== undefined)
         lastSeenDays = Number(lastSeenMatch[1]);
-        if (String(lastSeenMatch[2]).search("év|year") != -1) {
-            lastSeenDays *= 365;
-        } else if (String(lastSeenMatch[2]).search("hónap|month") != -1) {
-            lastSeenDays *= 30;
-        } else if (String(lastSeenMatch[2]).search("(mn|h|perc|óra) (ezelőtt|ago)") != -1) {
-            lastSeenDays = 0;
-        }
+    else
+        lastSeenDays = 1;
+    if (String(lastSeenMatch[2]).search("év|year") != -1) {
+        lastSeenDays *= 365;
+    } else if (String(lastSeenMatch[2]).search("hónap|month") != -1) {
+        lastSeenDays *= 30;
+    } else if (String(lastSeenMatch[2]).search("(mn|h|perc|óra) (ezelőtt|ago)") != -1) {
+        lastSeenDays = 0;
     }
     /* stats per game */
     for (var i = 0; i < gameDivs.length; i++) {
         var game = gameDivs[i].getElementsByClassName("gamename")[0].innerText;
         var details = gameDivs[i].getElementsByClassName("palmares_details")[0].innerText;
-        var arr = details.match(/(\d+)/g);
-        var played = Number(arr[0]);
-        var won = Number(arr[1]);
+        var arr = details.match(/(\d+[\s0-9]*)/g);
+        var played = Number(arr[0].replace(/\s/g, ''));
+        var won = Number(arr[1].replace(/\s/g, ''));
         matches += played;
         wins += won;
         var elo = gameDivs[i].getElementsByClassName("gamerank_value")[0].innerText;
