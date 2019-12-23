@@ -16,8 +16,10 @@ function exportStats() {
     /* days since last online */
     var lastSeenStr = document.querySelector("#last_seen").innerText;
     var lastSeenDays = 0;
-    var lastSeenMatch = lastSeenStr.match(/(\d+)? (.*)/);
-    if (lastSeenMatch[1] !== undefined)
+    var lastSeenMatch = lastSeenStr.match(/(\d+|NaN)? (.*)/);
+    if (lastSeenMatch[1] == "NaN")
+        lastSeenDays = 0;
+    else if (lastSeenMatch[1] !== undefined)
         lastSeenDays = Number(lastSeenMatch[1]);
     else
         lastSeenDays = 1;
