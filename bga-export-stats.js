@@ -38,7 +38,9 @@ function exportStats() {
         matches += played;
         wins += won;
         var elo = gameDivs[i].getElementsByClassName("gamerank_value")[0].innerText;
-        var rank = gameDivs[i].getElementsByClassName("gamerank_no")[0].innerText.match(/(\d+)?/)[0];
+        var rank = "";
+        var rankStr = gameDivs[i].getElementsByClassName("gamerank_no")[0];
+        if (rankStr) rank = rankStr.innerText.match(/(\d+)?/)[0];
         output += player + ";" + game + ";" + elo + ";" + rank + ";" + played + ";" + won + "\n";
     }
     /* prepend overall player stats */
