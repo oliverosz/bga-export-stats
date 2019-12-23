@@ -22,4 +22,4 @@ The first 2 records contain overall player stats:
 
 ## Usage
 
-Create a bookmark in your browser, and copy the contents of the [bga-export-stats.js](bga-export-stats.js) file into the URL filed of the bookmark. When you're on a BGA player profile, open the bookmark, which will run the script and display the results.
+Create a bookmark in your browser, and copy the contents of the [bga-export-stats.js](bga-export-stats.js) file into the URL field of the bookmark. When you're on a BGA player profile, open the bookmark, which will run the script and display the results.
