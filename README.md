@@ -10,7 +10,7 @@ This bookmarklet was created for BGA - [boardgamearena.com](https://boardgameare
 
 The first 2 records contain overall player stats:
 - Player stats
-    - Prestige
+    - XP (formerly called Prestige)
     - Reputation (Karma ☯)
     - Total matches
     - Total wins

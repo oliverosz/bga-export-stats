@@ -4,7 +4,7 @@ function exportStats() {
     var output = "";
     var player = document.querySelector("#player_name").innerText;
     /* overall stats */
-    var prestige = document.querySelector("#pageheader_prestige").innerText.trim().replace('k', '000');
+    var exp = document.querySelector("#pageheader_prestige").innerText.trim().replace('k','000').replace(' XP','');
     var karma = document.querySelector(".progressbar_label").getElementsByClassName("value")[0].innerText.replace('%','');
     var matches = 0;
     var wins = 0;
@@ -46,7 +46,7 @@ function exportStats() {
         output += player + ";" + game + ";" + elo + ";" + rank + ";" + played + ";" + won + "\n";
     }
     /* prepend overall player stats */
-    output = player + ";Prestige;" + prestige + ";" + karma + ";" + matches + ";" + wins + "\n" + 
+    output = player + ";XP;" + exp + ";" + karma + ";" + matches + ";" + wins + "\n" + 
              player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + ";" + lastSeenDays + "\n" + output;
     /* create export box or remove it if already exists */
     var div = document.querySelector("#pagesection_export");
