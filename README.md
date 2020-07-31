@@ -1,6 +1,14 @@
-## Description
+These scripts were created for BGA - [boardgamearena.com](https://boardgamearena.com). They can be used as [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
 
-This bookmarklet was created for BGA - [boardgamearena.com](https://boardgamearena.com). This script collects the game stats of a player into CSV format, with the following values for each game:
+## [MoveStats.js](MoveStats.js)
+
+This script creates a CSV formatted table from a game log. Use it on a game review page (boardgamearena.com/gamereview?table=...). The CSV table appears at the top, rerunning the script removes it.
+
+## [PlayerStats.js](PlayerStats.js)
+
+This script collects the game stats of a player into CSV format. Use it on the profile page of the player. The CSV table appears at the top, rerunning the script removes it.
+
+The following values are exported for each game:
 - Player Name
 - Game Name
 - ELO
@@ -19,7 +27,3 @@ The first 2 records contain overall player stats:
     - Timeouts
     - Total recent matches
     - Days since last online
-
-## Usage
-
-Create a bookmark in your browser, and copy the contents of the [bga-export-stats.js](bga-export-stats.js) file into the URL field of the bookmark. When you're on a BGA player profile, open the bookmark, which will run the script and display the results.
