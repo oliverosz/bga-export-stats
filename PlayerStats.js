@@ -69,7 +69,7 @@ function exportStats() {
 }
 if (window.location.href.includes("boardgamearena.com")
     && window.location.href.includes("player")
-    || confirm("It seems, you are not on a BGA player profile page.\nWould you still like ot run the script?"))
+    || confirm("It seems, you are not on a BGA player profile page.\nWould you still like to run the script?"))
     {
         try {
             exportStats();
