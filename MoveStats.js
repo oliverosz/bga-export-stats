@@ -17,17 +17,21 @@ javascript:{
             console.log("Error while parsing log title.");
         }
         var players = Array.from(document.querySelectorAll("#game_result .name")).map(item => item.innerText);
-        var moveNo;
+        var moveNo = 0;
         var datetime;
         var player;
         var remaining;
         var logs = document.querySelector("#gamelogs").children;
+        var changed = false;
         for (var i = 0; i < logs.length; i++) {
-            var toPrint = false;
             try {
                 if (logs[i].className == "smalltext") {
                     player = undefined;
-                    moveNo = logs[i].innerText.match(/\w+ (\d+) ?:/)[1];
+                    moveNo = new Number(logs[i].innerText.match(/\w+ (\d+|null) ?:/)[1]);
+                    if (isNaN(moveNo)) {
+                        moveNo = next;
+                    }
+                    var next = moveNo + 1;
                     var timeStr = logs[i].getElementsByTagName("span")[0].innerText;
                     var parsed = new Date(timeStr);
                     if (isNaN(parsed)) {
@@ -35,30 +39,38 @@ javascript:{
                     } else {
                         datetime = parsed;
                     }
+                    changed = true;
                 }
                 else if (player == undefined) {
                     if (logs[i].className.includes("gamelogreview")) {
-                        var words = logs[i].innerText.split(" ");
-                        player = words.find(word => players.includes(word));
+                        var minidx = logs[i].innerText.length;
+                        for (let j = 0; j < players.length; j++) {
+                            let where = logs[i].innerText.indexOf(players[j]);
+                            if (0 <= where && where <= minidx) {
+                                minidx = where;
+                                player = players[j];
+                                changed = true;
+                            }
+                        }
                     }
                 } else if (logs[i].className.includes("reflexiontimes_block")) {
                     for (var j = 0; j < logs[i].childElementCount; j++) {
                         if (logs[i].children[j].innerText.indexOf(player) == 0) {
                             remaining = logs[i].children[j].children[0].innerText;
-                            toPrint = true;
+                            changed = true;
                             break;
                         }
                     }
                 }
             } catch (error) {
                 console.log(error);
-                console.log("Could not parse element: " + logs[i].toString());
+                console.log("Could not parse element: " + logs[i].innerHTML);
             }
-            if (toPrint) {
+            if (changed && player != undefined && moveNo != undefined && datetime != undefined) {
                 output = output + [tableID, gameName, moveNo, datetime.toLocaleString(), JSDateToExcelDate(datetime), player, remaining].join(";") + "\n";
                 moveNo = undefined;
-                time = undefined;
                 remaining = undefined;
+                changed = false;
             }
         }
         /* create export box or remove it if already exists */
