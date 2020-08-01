@@ -54,7 +54,7 @@ javascript:{
                 console.log("Could not parse element: " + logs[i].toString());
             }
             if (toPrint) {
-                output = output + [tableID, gameName, moveNo, JSDateToExcelDate(new Date(date + time)), remaining, player].join(";") + "\n";
+                output = output + [tableID, gameName, moveNo, JSDateToExcelDate(new Date(date + time)), player, remaining].join(";") + "\n";
                 moveNo = undefined;
                 time = undefined;
                 remaining = undefined;
@@ -67,7 +67,7 @@ javascript:{
             div.setAttribute("id", "pagesection_export");
             div.className = "pagesection";
             var header = document.createElement("h3");
-            header.innerText = "Table ID;Game Name;Move No.;Date Time;Remaining Time;Player Name"; /* column headers in the box title */
+            header.innerText = "Table ID;Game Name;Move No.;Date Time;Player Name;Remaining Time"; /* column headers in the box title */
             var exported = document.createElement("div");
             /* select all text when clicked */
             exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
