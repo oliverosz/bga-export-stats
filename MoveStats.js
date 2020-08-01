@@ -69,6 +69,7 @@ javascript:{
             div.className = "pagesection";
             var header = document.createElement("h3");
             header.innerText = "Table ID;Game Name;Move No.;Date Time;Excel Time;Player Name;Remaining Time"; /* column headers in the box title */
+            header.setAttribute("style", "text-transform: none;");
             var exported = document.createElement("div");
             /* select all text when clicked */
             exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
