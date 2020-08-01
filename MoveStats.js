@@ -6,40 +6,58 @@ javascript:{
     }
     /* generates CSV from timestamps of player moves in a match */
     function exportStats() {
-        var titleStr = document.querySelector("#reviewtitle").innerText.match(/(\w+) (.+) #(\d+)/);
-        var gameName = titleStr[2];
-        var tableID = titleStr[3];
         var output = "";
+        var gameName;
+        var tableID;
+        try {
+            var titleStr = document.querySelector("#reviewtitle").innerText.match(/(\w+) (.+) #(\d+)/);
+            gameName = titleStr[2];
+            tableID = titleStr[3];
+        } catch (error) {
+            console.log("Error while parsing log title.");
+        }
         var players = Array.from(document.querySelectorAll("#game_result .name")).map(item => item.innerText);
-        var moveNo = 0;
-        var date = "";
-        var time = "";
-        var remaining = "";
-        var player = "";
+        var moveNo;
+        var date;
+        var time;
+        var player;
+        var remaining;
         var logs = document.querySelector("#gamelogs").children;
         for (var i = 0; i < logs.length; i++) {
-            if (logs[i].className == "smalltext") {
-                moveNo = logs[i].innerText.match(/Move (\d+) ?:/)[1];
-                var timeParts = logs[i].getElementsByTagName("span")[0].innerText.match(/(\d+\/\d+\/\d+ )?(\d+:\d+:\d+ [AP]M)/);
-                time = timeParts[2];
-                if (timeParts[1] != undefined) {
-                    date = timeParts[1];
+            var toPrint = false;
+            try {
+                if (logs[i].className == "smalltext") {
+                    moveNo = logs[i].innerText.match(/\w+ (\d+) ?:/)[1];
+                    var timeParts = logs[i].getElementsByTagName("span")[0].innerText.match(/(\d+\/\d+\/\d+ )?(\d+:\d+:\d+ [AP]M)/);
+                    time = timeParts[2];
+                    if (timeParts[1] != undefined) {
+                        date = timeParts[1];
+                    }
+                    player = undefined;
                 }
-                player = "";
-            }
-            else if (player == "") {
-                if (logs[i].className.includes("gamelogreview")) {
-                    var words = logs[i].innerText.split(" ");
-                    player = words.find(word => players.includes(word));
-                }
-            } else if (logs[i].className.includes("reflexiontimes_block")) {
-                for (var j = 0; j < logs[i].childElementCount; j++) {
-                    if (logs[i].children[j].innerText.indexOf(player) == 0) {
-                        remaining = logs[i].children[j].children[0].innerText;
-                        output = output + [tableID, gameName, moveNo, JSDateToExcelDate(new Date(date + time)), remaining, player].join(";") + "\n";
-                        break;
+                else if (player == undefined) {
+                    if (logs[i].className.includes("gamelogreview")) {
+                        var words = logs[i].innerText.split(" ");
+                        player = words.find(word => players.includes(word));
+                    }
+                } else if (logs[i].className.includes("reflexiontimes_block")) {
+                    for (var j = 0; j < logs[i].childElementCount; j++) {
+                        if (logs[i].children[j].innerText.indexOf(player) == 0) {
+                            remaining = logs[i].children[j].children[0].innerText;
+                            toPrint = true;
+                            break;
+                        }
                     }
                 }
+            } catch (error) {
+                console.log(error);
+                console.log("Could not parse element: " + logs[i].toString());
+            }
+            if (toPrint) {
+                output = output + [tableID, gameName, moveNo, JSDateToExcelDate(new Date(date + time)), remaining, player].join(";") + "\n";
+                moveNo = undefined;
+                time = undefined;
+                remaining = undefined;
             }
         }
         /* create export box or remove it if already exists */
