@@ -18,8 +18,7 @@ javascript:{
         }
         var players = Array.from(document.querySelectorAll("#game_result .name")).map(item => item.innerText);
         var moveNo;
-        var date;
-        var time;
+        var datetime;
         var player;
         var remaining;
         var logs = document.querySelector("#gamelogs").children;
@@ -27,13 +26,15 @@ javascript:{
             var toPrint = false;
             try {
                 if (logs[i].className == "smalltext") {
-                    moveNo = logs[i].innerText.match(/\w+ (\d+) ?:/)[1];
-                    var timeParts = logs[i].getElementsByTagName("span")[0].innerText.match(/(\d+\/\d+\/\d+ )?(\d+:\d+:\d+ [AP]M)/);
-                    time = timeParts[2];
-                    if (timeParts[1] != undefined) {
-                        date = timeParts[1];
-                    }
                     player = undefined;
+                    moveNo = logs[i].innerText.match(/\w+ (\d+) ?:/)[1];
+                    var timeStr = logs[i].getElementsByTagName("span")[0].innerText;
+                    var parsed = new Date(timeStr);
+                    if (isNaN(parsed)) {
+                        datetime = new Date(datetime.toDateString() + ' ' + timeStr);
+                    } else {
+                        datetime = parsed;
+                    }
                 }
                 else if (player == undefined) {
                     if (logs[i].className.includes("gamelogreview")) {
@@ -54,7 +55,7 @@ javascript:{
                 console.log("Could not parse element: " + logs[i].toString());
             }
             if (toPrint) {
-                output = output + [tableID, gameName, moveNo, JSDateToExcelDate(new Date(date + time)), player, remaining].join(";") + "\n";
+                output = output + [tableID, gameName, moveNo, datetime.toLocaleString(), JSDateToExcelDate(datetime), player, remaining].join(";") + "\n";
                 moveNo = undefined;
                 time = undefined;
                 remaining = undefined;
@@ -67,7 +68,7 @@ javascript:{
             div.setAttribute("id", "pagesection_export");
             div.className = "pagesection";
             var header = document.createElement("h3");
-            header.innerText = "Table ID;Game Name;Move No.;Date Time;Player Name;Remaining Time"; /* column headers in the box title */
+            header.innerText = "Table ID;Game Name;Move No.;Date Time;Excel Time;Player Name;Remaining Time"; /* column headers in the box title */
             var exported = document.createElement("div");
             /* select all text when clicked */
             exported.setAttribute("style", "-webkit-touch-callout: all; -webkit-user-select: all; -khtml-user-select: all; -moz-user-select: all; -ms-user-select: all; user-select: all;");
