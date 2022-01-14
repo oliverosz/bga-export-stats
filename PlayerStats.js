@@ -17,13 +17,15 @@ function exportStats() {
     var lastSeenStr = document.querySelector("#last_seen").innerText;
     var lastSeenDays = 0;
     var lastSeenMatch = lastSeenStr.match(/(\d+|NaN)? (.*)/);
-    if (lastSeenMatch[1] == "NaN")
+    if (lastSeenStr == "" || lastSeenMatch[1] == "NaN")
         lastSeenDays = 0;
     else if (lastSeenMatch[1] !== undefined)
         lastSeenDays = Number(lastSeenMatch[1]);
     else
         lastSeenDays = 1;
-    if (String(lastSeenMatch[2]).search("év|year") != -1) {
+    if (lastSeenDays == 0) {
+        lastSeenDays = 0
+    } else if (String(lastSeenMatch[2]).search("év|year") != -1) {
         lastSeenDays *= 365;
     } else if (String(lastSeenMatch[2]).search("hónap|month") != -1) {
         lastSeenDays *= 30;
