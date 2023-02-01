@@ -6,7 +6,9 @@ This script creates a CSV formatted table from a game log. Use it on a game revi
 
 ## [PlayerStats.js](PlayerStats.js)
 
-This script collects the game stats of a player into CSV format. Use it on the profile page of the player. The CSV table appears at the top, rerunning the script removes it.
+This script collects the game stats of players into CSV format.
+Use it on the profile page of the player, or a group page to collect stats from all members.
+The CSV table appears at the top of the page.
 
 The following values are exported for each game:
 - Player Name
