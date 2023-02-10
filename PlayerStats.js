@@ -52,66 +52,95 @@ function parsePlayerStats(player_page) {
                 player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + ";" + lastSeenDays + "\n" + output;
     return output;
 }
-/* copies the CSV to clipboard */
-function copy() {
-    var copyText = document.getElementById("export_textarea");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); /* For mobile devices */
-    navigator.clipboard.writeText(copyText.value);
-    copyBtn = document.getElementById("copyBtn");
-    copyBtn.innerText = "Copied!";
+/* fetches and prints group members' stats */
+function exportPlayerStats() {
+    var exported = document.getElementById("export_textarea");
+    exported.value = "Loading... ";
+    var loading = async () => {
+        /* for every player parse stats and concatenate outputs */
+        var exported_str = "";
+        const parser = new DOMParser();
+        const members = document.getElementById("member_list").value.trim().split("\n");
+        for (let i = 0; i < members.length; ++i) {
+            var player_id = members[i].split(/[;\t]+/)[1];
+            const response = await fetch('https://boardgamearena.com/player?id='+player_id);
+            const html_str = await response.text();
+            const doc = parser.parseFromString(html_str, "text/html");
+            try {
+                exported_str = exported_str + parsePlayerStats(doc);
+            } catch (err) {
+                console.log(members[i] + "\n" + err);
+                console.log(doc);
+                window.alert(members[i] + "\n" + err);
+            }
+            exported.value = "Loading... " + (i+1) + "/" + members.length;
+        }
+        exported.value = exported_str.trim();
+    };
+    loading();
 }
 function displayExportSection() {
-    var div = document.createElement("div");
-    div.setAttribute("id", "pagesection_export");
-    div.className = "pagesection";
-    var header = document.createElement("h3");
-    header.innerText = "Player Name;Game Name;ELO;Rank;Matches;Wins"; /* column headers in the box title */
-    header.setAttribute("style", "text-transform: none;");
-    var exported = document.createElement("textarea");
-    exported.setAttribute("id", "export_textarea");
-    exported.setAttribute("cols", "100");
-    exported.setAttribute("rows", "10");
-    exported.setAttribute("style", "display: block;");
-    exported.value = "Loading...";
-    var copyBtn = document.createElement("button");
-    copyBtn.setAttribute("type", "button");
-    copyBtn.setAttribute("id", "copyBtn");
-    copyBtn.setAttribute("onclick", "copy()");
-    copyBtn.setAttribute("style", "width: auto; padding: 3px; margin-top: 15px; border: 1px solid black;");
-    copyBtn.innerText = "Copy to clipboard";
-    div.appendChild(header);
-    div.appendChild(exported);
-    div.appendChild(copyBtn);
-    document.querySelector("#pageheader").parentNode.prepend(div);
-}
-/* fetches and prints group members' stats */
-async function exportPlayerStats() {
-    /* for every group member parse player stats and concatenate outputs */
-    exported_str = "";
-    var exported = document.getElementById("export_textarea");
-    members = document.querySelectorAll(".list_of_players .player_in_list a.playername");
-    for (let i = 0; i < members.length; ++i) {
-        var player_id = members[i].getAttribute("href").replace("/player?id=", "");
-        const response = await fetch('https://boardgamearena.com/player?id='+player_id);
-        const html_str = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html_str, "text/html");
-        exported_str = exported_str + parsePlayerStats(doc);
-        exported.value = "Loading... " + (i+1) + "/" + members.length;
+    var rootdiv = document.createElement("div");
+    rootdiv.className = "pageheader";
+    
+    const divStyle = "float: left; margin: 0 10px;";
+    var membersdiv = document.createElement("div");
+    membersdiv.setAttribute("style", divStyle);
+    var exportdiv = document.createElement("div");
+    exportdiv.setAttribute("style", divStyle);
+    rootdiv.appendChild(membersdiv);
+    rootdiv.appendChild(exportdiv);
+
+    var membersheader = document.createElement("h3");
+    membersheader.innerText = "Name;Player ID";
+    membersheader.setAttribute("style", "text-transform: none;");
+
+    var memberlist = document.createElement("textarea");
+    memberlist.setAttribute("id", "member_list");
+    memberlist.setAttribute("cols", "50");
+    memberlist.setAttribute("rows", "10");
+    memberlist.setAttribute("style", "display: block;");
+    if (m[1] == "player") {
+        memberlist.value = document.getElementById("player_name").innerText.trim() + "\t" + m[2];
     }
-    exported.value = exported_str;
+    else {
+        const members = document.querySelectorAll(".list_of_players .player_in_list a.playername");
+        members.forEach(member => {
+            var player_id = member.getAttribute("href").replace("/player?id=", "");
+            memberlist.value = memberlist.value + member.innerText.trim() + "\t" + player_id + "\n";
+        });
+    }
+    membersdiv.appendChild(membersheader);
+    membersdiv.appendChild(memberlist);
+
+    var exportheader = document.createElement("h3");
+    exportheader.innerText = "Player Name;Game Name;ELO;Rank;Matches;Wins";
+    exportheader.setAttribute("style", "text-transform: none;");
+
+    var output = document.createElement("textarea");
+    output.setAttribute("id", "export_textarea");
+    output.setAttribute("cols", "100");
+    output.setAttribute("rows", "10");
+    output.setAttribute("style", "display: block;");
+    output.value = "Press Start to begin.";
+
+    var startBtn = document.createElement("button");
+    startBtn.setAttribute("type", "button");
+    startBtn.setAttribute("id", "startBtn");
+    startBtn.setAttribute("class", "bgabutton bgabutton_blue");
+    startBtn.setAttribute("onclick", "exportPlayerStats()");
+    startBtn.setAttribute("style", "width: auto; margin: 10px 0;");
+    startBtn.innerText = "Start";
+
+    exportdiv.appendChild(exportheader);
+    exportdiv.appendChild(output);
+    exportdiv.appendChild(startBtn);
+    document.querySelector("#pageheader").parentNode.prepend(rootdiv);
 }
-m = window.location.href.match(".*boardgamearena.com/(group|player)\\?id=");
+m = window.location.href.match(".*boardgamearena.com/(group|player)\\?id=(\\d+)");
 if (m || confirm("It seems, you are not on a BGA group or player page.\nWould you still like to run the script?")) {
     try {
         displayExportSection();
-        if (m[1] == "player") {
-            var exported = document.getElementById("export_textarea");
-            exported.value = parsePlayerStats(document);
-        } else {
-            exportPlayerStats();
-        }
     }
     catch(error) {
         alert("An error occurred:\n"+error);
