@@ -45,11 +45,11 @@ function parsePlayerStats(player_page) {
         var rank = "";
         var rankStr = gameDivs[i].getElementsByClassName("gamerank_no")[0];
         if (rankStr) rank = rankStr.innerText.match(/(\d+)?/)[0];
-        output += player + ";" + game + ";" + elo + ";" + rank + ";" + played + ";" + won + "\n";
+        output += player + "\t" + game + "\t" + elo + "\t" + rank + "\t" + played + "\t" + won + "\n";
     }
     /* prepend overall player stats */
-    output = player + ";XP;" + exp + ";" + karma + ";" + matches + ";" + wins + "\n" + 
-                player + ";Recent games;" + abandoned + ";" + timeout + ";" + recent + ";" + lastSeenDays + "\n" + output;
+    output = player + "\tXP\t" + exp + "\t" + karma + "\t" + matches + "\t" + wins + "\n" + 
+                player + "\tRecent games\t" + abandoned + "\t" + timeout + "\t" + recent + "\t" + lastSeenDays + "\n" + output;
     return output;
 }
 /* fetches and prints group members' stats */
@@ -79,6 +79,53 @@ function exportPlayerStats() {
     };
     loading();
 }
+/* checks players' membership status in given group ID */
+function checkMembership() {
+    var group_id = document.getElementById("group_filter").value.trim();
+    if (group_id == "") return;
+    const players = document.getElementById("member_list").value.trim().split("\n");
+    var checkedCount = 0;
+    var loading = async () => {
+        var checked = "";
+        const response = await fetch('https://boardgamearena.com/group?id='+group_id);
+        const html_str = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html_str, "text/html");
+        const memberlist = doc.querySelectorAll(".list_of_players .player_in_list a.playername");
+        var members = new Set();
+        memberlist.forEach(member => members.add(member.innerText));
+        var unconfirmed = new Set();
+        players.forEach(player => {
+            const name = player.split(/[;\t]+/)[0];
+            if (members.has(name)) {
+                checked += player + "\t1\n";
+                checkedCount++;
+                document.getElementById("member_list").value = "Loading... " + checkedCount + "/" + players.length;
+            } else {
+                unconfirmed.add(player);
+            }
+        });
+        for (const player of unconfirmed) {
+            const player_id = player.split(/[;\t]+/)[1];
+            const response = await fetch('https://boardgamearena.com/player?id='+player_id);
+            const html_str = await response.text();
+            const doc = parser.parseFromString(html_str, "text/html");
+            var groups = new Set();
+            doc.querySelectorAll("#playergroups .bga-link").forEach(group =>
+                groups.add(group.getAttribute("href").match(/id=(\d+)/)[1])
+            );
+            if (groups.has(group_id)) {
+                checked += player + "\t1\n";
+            } else {
+                checked += player + "\t0\n";
+            }
+            checkedCount++;
+            document.getElementById("member_list").value = "Loading... " + checkedCount + "/" + players.length;
+        }
+        document.getElementById("member_list").value = checked.trim();
+    };
+    loading();
+}
 function displayExportSection() {
     var rootdiv = document.createElement("div");
     rootdiv.className = "pageheader";
@@ -92,7 +139,7 @@ function displayExportSection() {
     rootdiv.appendChild(exportdiv);
 
     var membersheader = document.createElement("h3");
-    membersheader.innerText = "Name;Player ID";
+    membersheader.innerText = "Name\tPlayer ID";
     membersheader.setAttribute("style", "text-transform: none;");
 
     var memberlist = document.createElement("textarea");
@@ -113,8 +160,32 @@ function displayExportSection() {
     membersdiv.appendChild(membersheader);
     membersdiv.appendChild(memberlist);
 
+    var groupFilterText = document.createElement("p");
+    groupFilterText.innerText = "Check group membership:";
+    membersdiv.appendChild(groupFilterText);
+
+    var groupFilter = document.createElement("input");
+    groupFilter.setAttribute("id", "group_filter");
+    groupFilter.setAttribute("type", "text");
+    groupFilter.setAttribute("style", "width: 180px;");
+    if (m[1] == "group") {
+        groupFilter.value = m[2];
+    } else {
+        groupFilter.setAttribute("placeholder", "Enter Group ID");
+    }
+    membersdiv.appendChild(groupFilter);
+
+    var groupFilterBtn = document.createElement("button");
+    groupFilterBtn.setAttribute("type", "button");
+    groupFilterBtn.setAttribute("id", "group_filter_btn");
+    groupFilterBtn.setAttribute("class", "bgabutton bgabutton_blue");
+    groupFilterBtn.setAttribute("onclick", "checkMembership()");
+    groupFilterBtn.setAttribute("style", "width: auto; margin: 0px 10px 10px 10px;");
+    groupFilterBtn.innerText = "Check";
+    membersdiv.appendChild(groupFilterBtn);
+
     var exportheader = document.createElement("h3");
-    exportheader.innerText = "Player Name;Game Name;ELO;Rank;Matches;Wins";
+    exportheader.innerText = "Player Name\tGame Name\tELO\tRank\tMatches\tWins";
     exportheader.setAttribute("style", "text-transform: none;");
 
     var output = document.createElement("textarea");
@@ -122,7 +193,7 @@ function displayExportSection() {
     output.setAttribute("cols", "100");
     output.setAttribute("rows", "10");
     output.setAttribute("style", "display: block;");
-    output.value = "Press Start to begin.";
+    output.value = "Press Start button to start the data collection."; 
 
     var startBtn = document.createElement("button");
     startBtn.setAttribute("type", "button");
