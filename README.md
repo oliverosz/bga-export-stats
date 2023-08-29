@@ -1,5 +1,12 @@
 These scripts were created for BGA - [boardgamearena.com](https://boardgamearena.com). They can be used as [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
 
+## [GameList.js](GameList.js)
+
+This script collects the available games into CSV format.
+Use it on the game list page while logged in.
+Filtering is not supported currently, the list will include all available games.
+Alpha games are only included if you are an alpha reviewer.
+
 ## [MoveStats.js](MoveStats.js)
 
 This script creates a CSV formatted table from a game log. Use it on a game review page (boardgamearena.com/gamereview?table=...). The CSV table appears at the top, rerunning the script removes it.
