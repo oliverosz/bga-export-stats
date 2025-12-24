@@ -1,4 +1,7 @@
-These scripts were created for BGA - [boardgamearena.com](https://boardgamearena.com). They can be used as [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
+# BGA statistic bookmarklets
+
+These scripts were created for BGA - [boardgamearena.com](https://boardgamearena.com).
+They can be used as [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
 
 ## [GameList.js](GameList.js)
 
@@ -9,7 +12,9 @@ Alpha games are only included if you are an alpha reviewer.
 
 ## [MoveStats.js](MoveStats.js)
 
-This script creates a CSV formatted table from a game log. Use it on a game review page (boardgamearena.com/gamereview?table=...). The CSV table appears at the top, rerunning the script removes it.
+This script creates a CSV formatted table from a game log.
+Use it on a game review page (boardgamearena.com/gamereview?table=...).
+The CSV table appears at the top, rerunning the script removes it.
 
 ## [PlayerStats.js](PlayerStats.js)
 
@@ -18,6 +23,7 @@ Use it on the profile page of the player, or a group page to collect stats from 
 The CSV table appears at the top of the page.
 
 The following values are exported for each game:
+
 - Player Name
 - Game Name
 - ELO
@@ -26,16 +32,17 @@ The following values are exported for each game:
 - Wins
 
 The first 2 records contain overall player stats:
+
 - Player stats
-    - XP (formerly called Prestige)
-    - Reputation (Karma ☯)
-    - Total matches
-    - Total wins
+  - XP (formerly called Prestige)
+  - Reputation (Karma ☯)
+  - Total matches
+  - Total wins
 - Recent game history (last 60 days)
-    - Abandoned matches
-    - Timeouts
-    - Total recent matches
-    - Days since last online
+  - Abandoned matches
+  - Timeouts
+  - Total recent matches
+  - Days since last online
 
 ## [TournamentStats.js](TournamentStats.js)
 
