@@ -36,3 +36,8 @@ The first 2 records contain overall player stats:
     - Timeouts
     - Total recent matches
     - Days since last online
+
+## [TournamentStats.js](TournamentStats.js)
+
+This script adds a timeout column to the tournament result table, and shows remaining thinking times of players for finished matches.
+Use it on a tournament page (boardgamearena.com/tournament?id=...).
