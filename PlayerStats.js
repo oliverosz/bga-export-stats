@@ -38,7 +38,10 @@ function parsePlayerStats(player_page) {
         var details = gameDivs[i].getElementsByClassName("palmares_details")[0].innerText;
         var arr = details.match(/(\d+[\s0-9]*)/g);
         var played = Number(arr[0].replace(/\s/g, ''));
-        var won = Number(arr[1].replace(/\s/g, ''));
+        if (arr.length == 4) {
+            played += Number(arr[1].replace(/\s/g, ''));
+        }
+        var won = Number(arr[arr.length - 2].replace(/\s/g, ''));
         matches += played;
         wins += won;
         var elo = gameDivs[i].getElementsByClassName("gamerank_value")[0].innerText;
