@@ -46,5 +46,5 @@ The first 2 records contain overall player stats:
 
 ## [TournamentStats.js](TournamentStats.js)
 
-This script adds a timeout column to the tournament result table, and shows remaining thinking times of players for finished matches.
-Use it on a tournament page (boardgamearena.com/tournament?id=...).
+This script can be used on tournament pages (boardgamearena.com/tournament?id=...) to collect match timeout information.
+Player timeouts and remaining times can be displayed for the current tournament, or exported as CSV for the given list of tournaments.

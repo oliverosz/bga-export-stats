@@ -64,10 +64,130 @@ async function displayStats() {
         row.append(cell);
     });
 }
+async function parseTournamentStats(tour_id, tour_page) {
+    const headers = await getHeaders();
+    var output = "";
+    var matches = tour_page.querySelectorAll("div.v2tournament__encounter");
+    for (const match of matches) {
+        if (match.classList.contains("v2tournament__encounter--status-skipped")) {
+            continue;
+        }
+        var title = match.querySelector("a.v2tournament__encounter-title");
+        const tableID = title.getAttribute("href").match("table=(\\d+)")[1];
+        try {
+            const response = await fetch("https://boardgamearena.com/table/table/tableinfos.html?id="+tableID, { headers });
+            const info = await response.json();
+            if (info.data.status != "archive") {
+                continue;
+            }
+            const is_timeout = info.data.result.endgame_reason == "abandon_by_tournamenttimeout";
+            const progress = is_timeout ? info.data.progression : 100;
+            const time_limit = info.data.options["204"].value;
+            var player_output = "";
+            var players = match.querySelectorAll("div.v2tournament__encounter-player");
+            players.forEach(player => {
+                const pname = player.querySelector("a.playername").innerText;
+                const player_id = player.getAttribute("data-tournament-player-id");
+                const reflexion_time = info.data.result.stats.player.reflexion_time.values[player_id];
+                const remaining_time = time_limit - reflexion_time;
+                const points = Number(player.querySelector("div.v2tournament__encounter-player-points").innerText);
+                player_output += "\t" + pname + "\t" + remaining_time + "\t" + points;
+            });
+            output += tour_id + "\t" + tableID + "\t" + is_timeout + "\t" + progress + player_output + "\n";
+        } catch (error) {
+            console.error("Error fetching table info for table " + tableID, error);
+        }
+    }
+    return output;
+}
+function exportTournamentStats() {
+    var exported = document.getElementById("export_textarea");
+    exported.value = "Loading... ";
+    var loading = async () => {
+        /* for every tournament parse stats and concatenate outputs */
+        var exported_str = "";
+        const parser = new DOMParser();
+        const tours = document.getElementById("tournament_list").value.trim().split("\n");
+        for (let i = 0; i < tours.length; ++i) {
+            var tour_id = tours[i];
+            const response = await fetch('https://boardgamearena.com/tournament?id='+tour_id);
+            const html_str = await response.text();
+            const doc = parser.parseFromString(html_str, "text/html");
+            try {
+                exported_str = exported_str + await parseTournamentStats(tour_id, doc);
+            } catch (err) {
+                console.log(tours[i] + "\n" + err);
+                console.log(doc);
+                window.alert(tours[i] + "\n" + err);
+            }
+            exported.value = "Loading... " + (i+1) + "/" + tours.length;
+        }
+        exported.value = exported_str.trim();
+    };
+    loading();
+}
+function displayExportSection() {
+    var rootdiv = document.createElement("div");
+    rootdiv.className = "pageheader";
+    
+    const divStyle = "float: left; margin: 0 10px;";
+    var toursdiv = document.createElement("div");
+    toursdiv.setAttribute("style", divStyle);
+    var exportdiv = document.createElement("div");
+    exportdiv.setAttribute("style", divStyle);
+    rootdiv.appendChild(toursdiv);
+    rootdiv.appendChild(exportdiv);
+
+    var idsheader = document.createElement("h3");
+    idsheader.innerText = "Tournament ID";
+    idsheader.setAttribute("style", "text-transform: none;");
+
+    var tournamentlist = document.createElement("textarea");
+    tournamentlist.setAttribute("id", "tournament_list");
+    tournamentlist.setAttribute("cols", "50");
+    tournamentlist.setAttribute("rows", "10");
+    tournamentlist.setAttribute("style", "display: block;");
+    tournamentlist.value = m[1];
+    toursdiv.appendChild(idsheader);
+    toursdiv.appendChild(tournamentlist);
+
+    var checkBtn = document.createElement("button");
+    checkBtn.setAttribute("type", "button");
+    checkBtn.setAttribute("id", "check_btn");
+    checkBtn.setAttribute("class", "bgabutton bgabutton_blue");
+    checkBtn.setAttribute("onclick", "displayStats()");
+    checkBtn.setAttribute("style", "width: auto; margin: 10px 10px 10px 10px;");
+    checkBtn.innerText = "Display timeouts here";
+    toursdiv.appendChild(checkBtn);
+
+    var exportheader = document.createElement("h3");
+    exportheader.innerText = "Tournament ID; Table ID; Timeout; Progress; Player1; Time1; Point1; Player2; Time2; Point2";
+    exportheader.setAttribute("style", "text-transform: none;");
+
+    var output = document.createElement("textarea");
+    output.setAttribute("id", "export_textarea");
+    output.setAttribute("cols", "100");
+    output.setAttribute("rows", "10");
+    output.setAttribute("style", "display: block;");
+    output.value = "Press Start button to start the data collection."; 
+
+    var startBtn = document.createElement("button");
+    startBtn.setAttribute("type", "button");
+    startBtn.setAttribute("id", "startBtn");
+    startBtn.setAttribute("class", "bgabutton bgabutton_blue");
+    startBtn.setAttribute("onclick", "exportTournamentStats()");
+    startBtn.setAttribute("style", "width: auto; margin: 10px 0;");
+    startBtn.innerText = "Start";
+
+    exportdiv.appendChild(exportheader);
+    exportdiv.appendChild(output);
+    exportdiv.appendChild(startBtn);
+    document.querySelector("div.tournaments-presentation").parentNode.prepend(rootdiv);
+}
 m = window.location.href.match(".*boardgamearena.com/tournament\\?id=(\\d+)");
 if (m || confirm("It seems, you are not on a BGA tournament page.\nWould you still like to run the script?")) {
     try {
-        displayStats();
+        displayExportSection();
     }
     catch(error) {
         alert("An error occurred:\n"+error);
