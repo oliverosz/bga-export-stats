@@ -64,6 +64,9 @@ async function displayStats() {
         row.append(cell);
     });
 }
+function runDisplayStats() {
+    displayStats();
+}
 async function parseTournamentStats(tour_id, tour_page) {
     const headers = await getHeaders();
     var output = "";
@@ -155,7 +158,7 @@ function displayExportSection() {
     checkBtn.setAttribute("type", "button");
     checkBtn.setAttribute("id", "check_btn");
     checkBtn.setAttribute("class", "bgabutton bgabutton_blue");
-    checkBtn.setAttribute("onclick", "displayStats()");
+    checkBtn.setAttribute("onclick", "runDisplayStats()");
     checkBtn.setAttribute("style", "width: auto; margin: 10px 10px 10px 10px;");
     checkBtn.innerText = "Display timeouts here";
     toursdiv.appendChild(checkBtn);
