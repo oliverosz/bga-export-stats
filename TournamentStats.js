@@ -96,7 +96,7 @@ async function parseTournamentStats(tour_id, tour_page) {
                 const points = Number(player.querySelector("div.v2tournament__encounter-player-points").innerText);
                 player_output += "\t" + pname + "\t" + remaining_time + "\t" + points;
             });
-            output += tour_id + "\t" + tableID + "\t" + is_timeout + "\t" + progress + player_output + "\n";
+            output += tour_id + "\t" + tableID + "\t" + Number(is_timeout) + "\t" + progress + player_output + "\n";
         } catch (error) {
             console.error("Error fetching table info for table " + tableID, error);
         }
