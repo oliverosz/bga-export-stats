@@ -68,8 +68,24 @@ function runDisplayStats() {
     displayStats();
 }
 async function parseTournamentStats(tour_id, tour_page) {
-    const headers = await getHeaders();
     var output = "";
+    const headers = await getHeaders();
+    const tour_name = tour_page.querySelector("div.tournaments-presentation__title-text").innerText.replaceAll(/(\s)+/g, " ").trim();
+    const start_time = new Date(tour_page.querySelector("div.tournaments-presentation__subtitle-value > div.localDate").innerText * 1000);
+    let end_time = "";
+    let rounds = 0;
+    let round_limit = 0;
+    var data_rows = tour_page.querySelectorAll("div.tournaments-option");
+    rounds = data_rows[6].innerText.match("(\\d+)")[1];
+    round_limit = data_rows[7].innerText.match("(\\d+)")[1];
+    // for (const row of data_rows) {
+    //     if (row.innerText.startsWith("Játszmák száma") || row.innerText.startsWith("Number of matches")) {
+    //         rounds = row.innerText.match("(\\d+)")[1];
+    //     }
+    //     if (row.innerText.startsWith("Játék maximális időtartama") || row.innerText.startsWith("Game maximum duration")) {
+    //         round_limit = row.innerText.match("(\\d+)")[1];
+    //     }
+    // }
     var matches = tour_page.querySelectorAll("div.v2tournament__encounter");
     for (const match of matches) {
         if (match.classList.contains("v2tournament__encounter--status-skipped")) {
@@ -85,6 +101,10 @@ async function parseTournamentStats(tour_id, tour_page) {
             }
             const is_timeout = info.data.result.endgame_reason == "abandon_by_tournamenttimeout";
             const progress = is_timeout ? info.data.progression : 100;
+            const match_end = new Date(info.data.result.time_end);
+            if (end_time === "" || end_time < match_end) {
+                end_time = match_end;
+            }
             const time_limit = info.data.options["204"].value;
             var player_output = "";
             var players = match.querySelectorAll("div.v2tournament__encounter-player");
@@ -101,7 +121,7 @@ async function parseTournamentStats(tour_id, tour_page) {
             console.error("Error fetching table info for table " + tableID, error);
         }
     }
-    return output;
+    return tour_id + "\t" + tour_name + "\t" + start_time.toLocaleString() + "\t" + end_time.toLocaleString() + "\t" + rounds + "\t" + round_limit + "\n" + output;
 }
 function exportTournamentStats() {
     var exported = document.getElementById("export_textarea");
