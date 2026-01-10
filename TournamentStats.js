@@ -78,14 +78,14 @@ async function parseTournamentStats(tour_id, tour_page) {
     var data_rows = tour_page.querySelectorAll("div.tournaments-option");
     rounds = data_rows[6].innerText.match("(\\d+)")[1];
     round_limit = data_rows[7].innerText.match("(\\d+)")[1];
-    // for (const row of data_rows) {
-    //     if (row.innerText.startsWith("Játszmák száma") || row.innerText.startsWith("Number of matches")) {
-    //         rounds = row.innerText.match("(\\d+)")[1];
-    //     }
-    //     if (row.innerText.startsWith("Játék maximális időtartama") || row.innerText.startsWith("Game maximum duration")) {
-    //         round_limit = row.innerText.match("(\\d+)")[1];
-    //     }
-    // }
+    /*for (const row of data_rows) {
+        if (row.innerText.startsWith("Játszmák száma") || row.innerText.startsWith("Number of matches")) {
+            rounds = row.innerText.match("(\\d+)")[1];
+        }
+        if (row.innerText.startsWith("Játék maximális időtartama") || row.innerText.startsWith("Game maximum duration")) {
+            round_limit = row.innerText.match("(\\d+)")[1];
+        }
+    }*/
     var matches = tour_page.querySelectorAll("div.v2tournament__encounter");
     for (const match of matches) {
         if (match.classList.contains("v2tournament__encounter--status-skipped")) {
