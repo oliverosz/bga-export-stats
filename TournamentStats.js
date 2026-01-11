@@ -70,8 +70,12 @@ function runDisplayStats() {
 async function parseTournamentStats(tour_id, tour_page) {
     var output = "";
     const headers = await getHeaders();
-    const tour_name = tour_page.querySelector("div.tournaments-presentation__title-text").innerText.replaceAll(/(\s)+/g, " ").trim();
+    const tour_name_full = tour_page.querySelector("div.tournaments-presentation__title-tournament").innerText;
+    /*const champ_name = tour_name_full.split("•")[0].trim();
+    const tour_name = tour_name_full.split("•")[1].trim();*/
+    const game_name = tour_page.querySelector("div.tournaments-presentation__title-game > a").innerText;
     const start_time = new Date(tour_page.querySelector("div.tournaments-presentation__subtitle-value > div.localDate").innerText * 1000);
+    const player_count = tour_page.querySelector("div.tournaments-presentation__subtitle-block-players > div > b").innerText;
     let end_time = "";
     let rounds = 0;
     let round_limit = 0;
@@ -87,6 +91,7 @@ async function parseTournamentStats(tour_id, tour_page) {
         }
     }*/
     var matches = tour_page.querySelectorAll("div.v2tournament__encounter");
+    var timeout_matches = 0;
     for (const match of matches) {
         if (match.classList.contains("v2tournament__encounter--status-skipped")) {
             continue;
@@ -117,11 +122,12 @@ async function parseTournamentStats(tour_id, tour_page) {
                 player_output += "\t" + pname + "\t" + remaining_time + "\t" + points;
             });
             output += tour_id + "\t" + tableID + "\t" + Number(is_timeout) + "\t" + progress + player_output + "\n";
+            timeout_matches += is_timeout;
         } catch (error) {
             console.error("Error fetching table info for table " + tableID, error);
         }
     }
-    return tour_id + "\t" + tour_name + "\t" + start_time.toLocaleString() + "\t" + end_time.toLocaleString() + "\t" + rounds + "\t" + round_limit + "\n" + output;
+    return tour_id + "\t" + tour_name_full + "\t\t" + game_name + "\t" + start_time.toLocaleString() + "\t" + end_time.toLocaleString() + "\t" + rounds + "\t" + round_limit + "\t" + matches.length + "\t" + timeout_matches + "\t" + player_count + "\n" + output;
 }
 function exportTournamentStats() {
     var exported = document.getElementById("export_textarea");
