@@ -77,9 +77,11 @@ async function parseTournamentStats(tour_id, tour_page) {
     const start_time = new Date(tour_page.querySelector("div.tournaments-presentation__subtitle-value > div.localDate").innerText * 1000);
     const player_count = tour_page.querySelector("div.tournaments-presentation__subtitle-block-players > div > b").innerText;
     let end_time = "";
+    let players_per_match_max = 0;
     let rounds = 0;
     let round_limit = 0;
     var data_rows = tour_page.querySelectorAll("div.tournaments-option");
+    players_per_match_max = data_rows[1].innerText.match("(\\d+)")[1];
     rounds = data_rows[6].innerText.match("(\\d+)")[1];
     round_limit = data_rows[7].innerText.match("(\\d+)")[1];
     /*for (const row of data_rows) {
@@ -127,7 +129,7 @@ async function parseTournamentStats(tour_id, tour_page) {
             console.error("Error fetching table info for table " + tableID, error);
         }
     }
-    return tour_id + "\t" + tour_name_full + "\t\t" + game_name + "\t" + start_time.toLocaleString() + "\t" + end_time.toLocaleString() + "\t" + rounds + "\t" + round_limit + "\t" + matches.length + "\t" + timeout_matches + "\t" + player_count + "\n" + output;
+    return tour_id + "\t" + tour_name_full + "\t\t" + game_name + "\t" + start_time.toLocaleString() + "\t" + end_time.toLocaleString() + "\t" + rounds + "\t" + round_limit + "\t" + matches.length + "\t" + timeout_matches + "\t" + player_count + "\t" + players_per_match_max + "\n" + output;
 }
 function exportTournamentStats() {
     var exported = document.getElementById("export_textarea");
@@ -173,7 +175,7 @@ function displayExportSection() {
 
     var tournamentlist = document.createElement("textarea");
     tournamentlist.setAttribute("id", "tournament_list");
-    tournamentlist.setAttribute("cols", "50");
+    tournamentlist.setAttribute("cols", "25");
     tournamentlist.setAttribute("rows", "10");
     tournamentlist.setAttribute("style", "display: block;");
     tournamentlist.value = m[1];
@@ -190,15 +192,16 @@ function displayExportSection() {
     toursdiv.appendChild(checkBtn);
 
     var exportheader = document.createElement("h3");
-    exportheader.innerText = "Tournament ID; Table ID; Timeout; Progress; Player1; Time1; Point1; Player2; Time2; Point2";
+    exportheader.innerText = "Tournament ID; Tournament Title; ; Game; Start; End; #Rounds; Time limit (days); #Matches; #Timeouts; #Competitors; #Players/match\n"
+                            + "Tournament ID; Table ID; Timeout; Progress; Player1; Time1; Point1; Player2; Time2; Point2";
     exportheader.setAttribute("style", "text-transform: none;");
 
     var output = document.createElement("textarea");
     output.setAttribute("id", "export_textarea");
-    output.setAttribute("cols", "100");
+    output.setAttribute("cols", "140");
     output.setAttribute("rows", "10");
     output.setAttribute("style", "display: block;");
-    output.value = "Press Start button to start the data collection."; 
+    output.value = "Press Start button to start the data collection.";
 
     var startBtn = document.createElement("button");
     startBtn.setAttribute("type", "button");
