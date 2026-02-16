@@ -154,7 +154,7 @@ function displayExportSection() {
         memberlist.value = document.getElementById("player_name").innerText.trim() + "\t" + m[2];
     }
     else {
-        const members = document.querySelectorAll(".list_of_players .player_in_list a.playername");
+        const members = document.querySelectorAll(".group-members-list a.playername");
         members.forEach(member => {
             var player_id = member.getAttribute("href").replace("/player?id=", "");
             memberlist.value = memberlist.value + member.innerText.trim() + "\t" + player_id + "\n";
