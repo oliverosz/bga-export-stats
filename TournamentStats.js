@@ -66,7 +66,8 @@ async function parseTournamentStats(tour_id, tour_info, overview) {
                 var player_output = "";
                 var players = match.players;
                 players.forEach(player => {
-                    const pname = tour_info.group.member[player.player_id].name;
+                    const playerInfo = tour_info.group.member[player.player_id] || tour_info.group.admin[player.player_id];
+                    const pname = playerInfo.name;
                     const player_id = player.player_id; /* not the same as above */
                     const reflexion_time = info.data.result.stats.player.reflexion_time.values[player_id];
                     const remaining_time = time_limit - reflexion_time;
